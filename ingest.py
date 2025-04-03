@@ -16,7 +16,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 class Ingester:
-    def __init__(self, config: configparser.ConfigParser, llm_model: str = "deepseek-r1:latest", embedding_model: str = "mxbai-embed-large"):
+    def __init__(self, config: configparser.ConfigParser, embedding_model: str = "mxbai-embed-large"): #llm_model: str = "deepseek-r1:latest",
         self.embeddings = OllamaEmbeddings(model=embedding_model)
         self.text_splitter = RecursiveCharacterTextSplitter(chunk_size=1024, chunk_overlap=100)
         self.vector_store = None

@@ -249,7 +249,7 @@ def insert_data(BEARER_TOKEN) -> None:
         max_timestamp = result[0] if result[0] is not None else 0
         logging.info("Max timestamp: " + str(max_timestamp))
         endtime = datetime.now(timezone.utc)
-        starttime = max_timestamp + timedelta(days=1) if max_timestamp else datetime.now(timezone.utc) - timedelta(days=2000)
+        starttime = max_timestamp + timedelta(days=1) if max_timestamp else datetime.now(timezone.utc) - timedelta(days=100)
         
 
         client = tweepy.Client(bearer_token=BEARER_TOKEN)
