@@ -16,5 +16,5 @@ def startup_event():
 def read_root():
     return {"status": "Telegram bot is running..."}
 
-if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=7860)
+#if __name__ == "__main__":
+#    uvicorn.run(app, host="0.0.0.0", port=7860)
