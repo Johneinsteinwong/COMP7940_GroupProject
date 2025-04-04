@@ -1,6 +1,6 @@
 #!/bin/sh
 
-ollama serve > server.log 2>&1 & 
+ollama serve > /tmp/server.log 2>&1 & 
 sleep 1 # wait for 1s
 ollama pull mxbai-embed-large &
 pull_pid=$!
