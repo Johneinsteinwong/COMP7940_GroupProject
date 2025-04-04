@@ -1,8 +1,8 @@
 ---
 title: COMP7940 Chatbot
 emoji: 🤖
-colorFrom: blue
-colorTo: purple
+colorFrom: purple
+colorTo: gray
 sdk: docker
 sdk_version: "20.10.24"
 app_file: app.py
