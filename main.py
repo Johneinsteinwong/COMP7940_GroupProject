@@ -31,22 +31,16 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 class ChatBot:
-    def __init__(self, config: configparser.ConfigParser, embedding_model: str = "mxbai-embed-large"):
+    def __init__(self, embedding_model: str = "mxbai-embed-large"): #config: configparser.ConfigParser, 
         self.model = HKBU_ChatGPT(
-            base_url=config['CHATGPT']['BASICURL'],
-            model=config['CHATGPT']['MODELNAME'], 
-            api_version=config['CHATGPT']['APIVERSION'],
-            api_key=config['CHATGPT']['ACCESS_TOKEN'],
+            base_url=os.environ['CHATGPT_BASICURL'],#config['CHATGPT']['BASICURL'],
+            model=os.environ['CHATGPT_MODELNAME'],#config['CHATGPT']['MODELNAME'], 
+            api_version=os.environ['CHATGPT_APIVERSION'],#config['CHATGPT']['APIVERSION'],
+            api_key=os.envrion['CHATGPT_ACCESS_TOKEN'],#config['CHATGPT']['ACCESS_TOKEN'],
         )
-        self.config = config
+        #self.config = config
         self.embeddings = OllamaEmbeddings(model=embedding_model)
-        '''
-        self.embeddings = OpenAIEmbeddings( 
-            base_url=config['CHATGPT']['BASICURL'],
-            model=config['CHATGPT']['EMBEDDING'],
-            api_version=config['CHATGPT']['APIVERSION'],
-            api_key=config['CHATGPT']['ACCESS_TOKEN'],
-        )'''
+
 
         self.text_splitter = RecursiveCharacterTextSplitter(chunk_size=1024, chunk_overlap=100)
         self.prompt = ChatPromptTemplate.from_template(
@@ -63,8 +57,8 @@ class ChatBot:
         )
         self.vector_store = PGVector.from_existing_index(
             embedding=self.embeddings,
-            connection=self.config['PostgreSQL']['CONNECTION_STRING'],
-            collection_name=self.config['PostgreSQL']['INDEX_NAME'],
+            connection=os.environ['CONNECTION_STRING'],#self.config['PostgreSQL']['CONNECTION_STRING'],
+            collection_name=os.environ['INDEX_NAME'],#self.config['PostgreSQL']['INDEX_NAME'],
         )
         #self.vector_store = Redis(
         #    embedding=self.embeddings,
@@ -237,8 +231,9 @@ def check_tweet_exists(tweet_id):
     """, (tweet_id,))
     return cur.fetchone() is not None
 
-def insert_data(BEARER_TOKEN) -> None:
+def insert_data() -> None:
     try:
+        BEARER_TOKEN = os.environ['TWITTER_BEARER_TOKEN']
         global postgreConn
         cur = postgreConn.cursor()
         # Get max timstamp
@@ -282,19 +277,19 @@ def insert_data(BEARER_TOKEN) -> None:
 
 def main():
     
-    config = configparser.ConfigParser()
-    config.read('config.ini')
+    #config = configparser.ConfigParser()
+    #config.read('config.ini')
     #os.environ['OPENAI_API_KEY'] = config['CHATGPT']['ACCESS_TOKEN']
-    BEARER_TOKEN = config['TWITTER']['BEARER_TOKEN'] 
+    #BEARER_TOKEN = os.environ['TWITTER_BEARER_TOKEN']#config['TWITTER']['BEARER_TOKEN'] 
 
-    updater = Updater(token=config['TELEGRAM']['ACCESS_TOKEN'], use_context=True)
+    updater = Updater(token=os.environ['TELEGRAM_ACCESS_TOKEN'], use_context=True) #config['TELEGRAM']['ACCESS_TOKEN']
     dispatcher = updater.dispatcher
 
     global postgreConn 
-    postgreConn = psycopg2.connect(config['PostgreSQL']['CONNECTION_STRING'])
+    postgreConn = psycopg2.connect(os.environ['CONNECTION_STRING'])#config['PostgreSQL']['CONNECTION_STRING'])
 
     create_table()
-    insert_data(BEARER_TOKEN)
+    insert_data()#BEARER_TOKEN)
     
     # global redis1
     # redis1 = redis.Redis(
@@ -305,7 +300,7 @@ def main():
     #     username=config['REDIS']['USER_NAME']
     # )
     global chatbot
-    chatbot = ChatBot(config)
+    chatbot = ChatBot()#config)
 
     chatgpt_handler = MessageHandler(Filters.text & (~Filters.command), equiped_chatgpt)
     dispatcher.add_handler(chatgpt_handler)
