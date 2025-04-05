@@ -210,7 +210,7 @@ def find_faq_answer(question: str) -> str:
         result = cur.execute("""
             SELECT answer, question
             FROM faq
-            WHERE question ILIKE %s
+            WHERE question = %s
             LIMIT 1
         """, (normed_question,))
         # return similarity > threshold, otherwise None
