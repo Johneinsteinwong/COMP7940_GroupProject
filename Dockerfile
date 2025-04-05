@@ -6,7 +6,7 @@ RUN apt-get update && apt-get install -y curl libpq-dev python3-dev \
 COPY requirements.txt .
 
 RUN pip install --no-cache-dir --upgrade pip && \
-	pip install -r $HOME/app/requirements.txt
+	pip install -r requirements.txt
 
 
 # Set up a new user named "user" with user ID 1000
