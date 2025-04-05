@@ -36,7 +36,7 @@ class ChatBot:
             base_url=os.environ['CHATGPT_BASICURL'],#config['CHATGPT']['BASICURL'],
             model=os.environ['CHATGPT_MODELNAME'],#config['CHATGPT']['MODELNAME'], 
             api_version=os.environ['CHATGPT_APIVERSION'],#config['CHATGPT']['APIVERSION'],
-            api_key=os.envrion['CHATGPT_ACCESS_TOKEN'],#config['CHATGPT']['ACCESS_TOKEN'],
+            api_key=os.environ['CHATGPT_ACCESS_TOKEN'],#config['CHATGPT']['ACCESS_TOKEN'],
         )
         #self.config = config
         self.embeddings = OllamaEmbeddings(model=embedding_model)
