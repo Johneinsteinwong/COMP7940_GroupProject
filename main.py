@@ -210,7 +210,7 @@ def find_faq_answer(question: str) -> str:
         result = cur.execute("""
             SELECT answer, question
             FROM faq
-            WHERE question == %s
+            WHERE question ILIKE %s
             ORDER BY score DESC
             LIMIT 1
         """, (normed_question,))
