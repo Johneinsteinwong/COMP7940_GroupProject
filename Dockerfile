@@ -1,5 +1,8 @@
 FROM python:3.10
 
+RUN apt-get update && apt-get install -y curl libpq-dev python3-dev \
+    && curl -fsSL https://ollama.com/install.sh | sh
+
 # Set up a new user named "user" with user ID 1000
 RUN useradd -m -u 1000 user
 
@@ -16,8 +19,6 @@ WORKDIR $HOME/app
 
 COPY --chown=user . $HOME/app
 
-RUN apt-get update && apt-get install -y curl libpq-dev python3-dev \
-    && curl -fsSL https://ollama.com/install.sh | sh
 
 RUN pip install --no-cache-dir --upgrade pip
 RUN pip install --user -r $HOME/app/requirements.txt
