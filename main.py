@@ -316,14 +316,14 @@ def add_faq():
             CREATE TABLE IF NOT EXISTS faq (
                 id SERIAL PRIMARY KEY,
                 question TEXT NOT NULL UNIQUE,     
-                answer TEXT NOT NULL,
-            )"""
-        )
+                answer TEXT NOT NULL
+            )
+        """)
         for question in faq:
             reply = chatbot.ask(question)
             normed_question = re.sub(r'[^\w\s]', '', question.lower().strip())
-            cur.execute(""""
-            "INSERT INTO faq (question, answer) VALUES (%s, %s) ON CONFLICT (question) DO UPDATE SET
+            cur.execute("""
+            INSERT INTO faq (question, answer) VALUES (%s, %s) ON CONFLICT (question) DO UPDATE SET
             answer = EXCLUDED.answer
             """, (normed_question, reply))
 
