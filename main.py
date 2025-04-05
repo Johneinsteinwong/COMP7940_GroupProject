@@ -351,7 +351,7 @@ def main():
 
     create_table()
     insert_data()#BEARER_TOKEN)
-    add_faq()
+    
     
     # global redis1
     # redis1 = redis.Redis(
@@ -363,6 +363,7 @@ def main():
     # )
     global chatbot
     chatbot = ChatBot()#config)
+    add_faq()
 
     chatgpt_handler = MessageHandler(Filters.text & (~Filters.command), equiped_chatgpt)
     dispatcher.add_handler(chatgpt_handler)
