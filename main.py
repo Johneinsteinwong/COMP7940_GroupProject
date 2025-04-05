@@ -351,6 +351,7 @@ def main():
 
     create_table()
     insert_data()#BEARER_TOKEN)
+    add_faq()
     
     # global redis1
     # redis1 = redis.Redis(
