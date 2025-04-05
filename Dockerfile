@@ -3,6 +3,12 @@ FROM python:3.10
 RUN apt-get update && apt-get install -y curl libpq-dev python3-dev \
     && curl -fsSL https://ollama.com/install.sh | sh
 
+COPY requirements.txt .
+
+RUN pip install --no-cache-dir --upgrade pip && \
+	pip install -r $HOME/app/requirements.txt
+
+
 # Set up a new user named "user" with user ID 1000
 RUN useradd -m -u 1000 user
 
@@ -17,18 +23,15 @@ ENV HOME=/home/user \
 WORKDIR $HOME/app
 
 
-COPY --chown=user . $HOME/app
+COPY --chown=user . .
 
-
-RUN pip install --no-cache-dir --upgrade pip
-RUN pip install --user -r $HOME/app/requirements.txt
 
 
 # COPY ./start.sh /app/start.sh
 
-RUN chmod +x $HOME/app/start.sh
+RUN chmod +x start.sh
 
 # ENV PATH=/root/.local/bin:$PATH
 
-CMD ["$HOME/app/start.sh"]
+CMD ["./start.sh"]
 
