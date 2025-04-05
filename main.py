@@ -201,12 +201,37 @@ def summarize(update: Update, context: CallbackContext) -> None:
     finally:
         cur.close()
 
+def find_faq_answer(question: str) -> str:
+    global postgreConn
+    cur = postgreConn.cursor()
+
+    normed_question = re.sub(r'[^\w\s]', '', question.lower())
+    
+    result = cur.execute("""
+        SELECT answer, question,
+               similarity(search_text, plainto_tsquery('english', %s)) AS score
+        FROM faq
+        WHERE search_text @@ plainto_tsquery('english', %s)
+        ORDER BY score DESC
+        LIMIT 1
+    """, (normed_question, normed_question))
+    # return similarity > threshold, otherwise None
+    if result and result[0]['score'] > 0.5: 
+        return result[0]['answer']
+    return None 
 
 def equiped_chatgpt(update: Update, context: CallbackContext) -> None:
     global chatbot
-    reply_message = chatbot.ask(update.message.text)
+    question = update.message.text
     logging.info("Update: " + str(update))
     logging.info("Context: " + str(context))
+    search_reply = find_faq_answer(question)
+    if search_reply:
+        logging.info("Found FAQ answer: " + search_reply)
+        context.bot.send_message(chat_id=update.effective_chat.id, text=search_reply)
+        return
+    logging.info("No FAQ answer found. Asking with ChatGPT.")
+    reply_message = chatbot.ask(question)
     context.bot.send_message(chat_id=update.effective_chat.id, text=reply_message)
 
 def create_table() -> None:
@@ -274,6 +299,42 @@ def insert_data() -> None:
         logging.error("Error inserting data: " + str(e))
     finally:
         cur.close()
+
+def add_faq():
+    logging.info("Adding FAQ to the database.")
+    try:
+        global postgreConn
+        global chatbot
+        cur = postgreConn.cursor()
+
+        faq = [
+            'What is Abelian?',
+            'What is the total supply of Abelian?',
+            'What is the Abelian token release schedule?'
+        ]
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS faq (
+                id SERIAL PRIMARY KEY,
+                question TEXT NOT NULL UNIQUE,     
+                answer TEXT NOT NULL,
+            )"""
+        )
+        for question in faq:
+            reply = chatbot.ask(question)
+            normed_question = re.sub(r'[^\w\s]', '', question.lower().strip())
+            cur.execute(""""
+            "INSERT INTO faq (question, answer) VALUES (%s, %s) ON CONFLICT (question) DO UPDATE SET
+            answer = EXCLUDED.answer
+            """, (normed_question, reply))
+
+
+        postgreConn.commit()
+        logging.info("Adding FAQ completed.")
+    except Exception as e:
+        logging.error("Error inserting FAQ: " + str(e))
+    finally:
+        cur.close()
+
 
 def main():
     
