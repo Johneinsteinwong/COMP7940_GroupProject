@@ -135,10 +135,10 @@ class ChatBot:
 
 
 def summarize(update: Update, context: CallbackContext) -> None:
-    try:
         #global redis1
-        global postgreConn
-        cur = postgreConn.cursor()
+    global postgreConn
+    cur = postgreConn.cursor()
+    try:
         start, end = context.args#[0]
         logging.info(context)
 
@@ -212,7 +212,7 @@ def equiped_chatgpt(update: Update, context: CallbackContext) -> None:
 def create_table() -> None:
     global postgreConn
     cur = postgreConn.cursor()
-    cur.execute(""" DROP TABLE IF EXISTS tweets """)
+    #cur.execute(""" DROP TABLE IF EXISTS tweets """)
     cur.execute("""
         CREATE TABLE IF NOT EXISTS tweets (
             id BIGINT PRIMARY KEY,
