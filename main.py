@@ -209,9 +209,9 @@ def find_faq_answer(question: str) -> str:
     
     result = cur.execute("""
         SELECT answer, question,
-               similarity(search_text, plainto_tsquery('english', %s)) AS score
+               similarity(question, plainto_tsquery('english', %s)) AS score
         FROM faq
-        WHERE search_text @@ plainto_tsquery('english', %s)
+        WHERE question @@ plainto_tsquery('english', %s)
         ORDER BY score DESC
         LIMIT 1
     """, (normed_question, normed_question))
