@@ -206,19 +206,24 @@ def find_faq_answer(question: str) -> str:
     cur = postgreConn.cursor()
 
     normed_question = re.sub(r'[^\w\s]', '', question.lower())
-    
-    result = cur.execute("""
-        SELECT answer, question,
-               similarity(question, plainto_tsquery('english', %s)) AS score
-        FROM faq
-        WHERE question @@ plainto_tsquery('english', %s)
-        ORDER BY score DESC
-        LIMIT 1
-    """, (normed_question, normed_question))
-    # return similarity > threshold, otherwise None
-    if result and result[0]['score'] > 0.5: 
-        return result[0]['answer']
-    return None 
+    try:
+        result = cur.execute("""
+            SELECT answer, question,
+                similarity(question, plainto_tsquery('english', %s)) AS score
+            FROM faq
+            WHERE question @@ plainto_tsquery('english', %s)
+            ORDER BY score DESC
+            LIMIT 1
+        """, (normed_question, normed_question))
+        # return similarity > threshold, otherwise None
+        if result and result[0]['score'] > 0.5: 
+            return result[0]['answer']
+        return None 
+    except Exception as e:
+        logging.error("Database error: " + str(e))
+        return None
+    finally:
+        cur.close()
 
 def equiped_chatgpt(update: Update, context: CallbackContext) -> None:
     global chatbot
