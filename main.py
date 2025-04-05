@@ -208,15 +208,14 @@ def find_faq_answer(question: str) -> str:
     normed_question = re.sub(r'[^\w\s]', '', question.lower())
     try:
         result = cur.execute("""
-            SELECT answer, question,
-                similarity(question, plainto_tsquery('english', %s)) AS score
+            SELECT answer, question
             FROM faq
-            WHERE question @@ plainto_tsquery('english', %s)
+            WHERE question == %s
             ORDER BY score DESC
             LIMIT 1
-        """, (normed_question, normed_question))
+        """, (normed_question,))
         # return similarity > threshold, otherwise None
-        if result and result[0]['score'] > 0.5: 
+        if result: 
             return result[0]['answer']
         return None 
     except Exception as e:
@@ -305,6 +304,14 @@ def insert_data() -> None:
     finally:
         cur.close()
 
+def check_faq_exists(question):
+    global postgreConn
+    cur = postgreConn.cursor()
+    cur.execute("""
+        SELECT 1 FROM faq WHERE question = %s LIMIT 1
+    """, (question,))
+    return cur.fetchone() is not None
+
 def add_faq():
     logging.info("Adding FAQ to the database.")
     try:
@@ -325,8 +332,12 @@ def add_faq():
             )
         """)
         for question in faq:
-            reply = chatbot.ask(question)
             normed_question = re.sub(r'[^\w\s]', '', question.lower().strip())
+            if check_faq_exists(normed_question):
+                logging.info("FAQ already exists: " + question)
+                continue
+            reply = chatbot.ask(question)
+            
             cur.execute("""
             INSERT INTO faq (question, answer) VALUES (%s, %s) ON CONFLICT (question) DO UPDATE SET
             answer = EXCLUDED.answer
