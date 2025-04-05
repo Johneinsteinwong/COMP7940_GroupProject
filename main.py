@@ -211,7 +211,6 @@ def find_faq_answer(question: str) -> str:
             SELECT answer, question
             FROM faq
             WHERE question ILIKE %s
-            ORDER BY score DESC
             LIMIT 1
         """, (normed_question,))
         # return similarity > threshold, otherwise None
