@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  ollama:
+    build:
+      context: .
+      dockerfile: Dockerfile.ollama
+    ports:
+      - "11434:11434"
+    volumns:
+      - ollama-data:/root/.ollama
+  chatbot:
+    build:
+      context: .
+      dockerfile: Dockerfile.bot
+    environment:
+      - OLLAMA_HOST=http://ollama:11434
+    depends_on:
+      - ollama
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/home/user/app
+    restart: always
+volumes:
+  ollama-data
+ 

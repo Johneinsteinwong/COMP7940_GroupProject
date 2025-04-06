@@ -42,7 +42,7 @@ class ChatBot:
             api_key=self.secret['CHATGPT-ACCESS-TOKEN'],#config['CHATGPT']['ACCESS_TOKEN'],
         )
         #self.config = config
-        self.embeddings = OllamaEmbeddings(model=embedding_model)
+        self.embeddings = OllamaEmbeddings(model=embedding_model, base_url=os.environ['OLLAMA_HOST'])
 
 
         self.text_splitter = RecursiveCharacterTextSplitter(chunk_size=1024, chunk_overlap=100)

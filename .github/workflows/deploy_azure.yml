@@ -28,16 +28,23 @@ jobs:
           script: |
             cd ~/comp7940bot
             
-            # Stop old container
-            docker stop comp7940bot || true
-            docker rm comp7940bot || true
-            
-            docker build . --no-cache --platform linux/amd64 -t comp7940bot
-            
-            docker run -d \
-              --name comp7940bot \
-              --restart unless-stopped \
-              comp7940bot:latest
+            # Single container
+            #docker stop comp7940bot || true
+            #docker rm comp7940bot || true
+            #docker build . --no-cache --platform linux/amd64 -t comp7940bot 
+            #docker run -d \
+            #  --name comp7940bot \
+            #  --restart unless-stopped \
+            #  comp7940bot:latest
+
+            # Using docker compose
+            docker-compose down || true
+            # clean old images
+            docker system prune -f
+            # build and start the services
+            docker compose up -d --build
+
+
       - name: Cleanup Docker
         uses: appleboy/ssh-action@master
         with:
