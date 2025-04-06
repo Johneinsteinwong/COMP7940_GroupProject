@@ -227,6 +227,7 @@ def find_faq_answer(question: str) -> str:
 def equiped_chatgpt(update: Update, context: CallbackContext) -> None:
     global chatbot
     question = update.message.text
+    logging.info("Input text" + repr(update.message.text))
     logging.info("Update: " + str(update))
     logging.info("Context: " + str(context))
     search_reply = find_faq_answer(question)
