@@ -205,13 +205,14 @@ def find_faq_answer(question: str) -> str:
     cur = postgreConn.cursor()
 
     normed_question = re.sub(r'[^\w\s]', '', question.lower().strip())
+    logging.info("Searching for normalized question: " + normed_question)
     try:
         result = cur.execute("""
             SELECT answer, question
             FROM faq
             WHERE question ILIKE %s
             LIMIT 1
-        """, (normed_question,))
+        """, (f"%{normed_question}%",))
         # return similarity > threshold, otherwise None
         if result: 
             return result[0]['answer']
