@@ -1,0 +1,42 @@
+name: Deploy to Azure VM
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build Docker image
+        run: |
+          docker build . --platform linux/amd64 -t comp7940bot
+          docker save -o comp7940bot.tar comp7940bot:latest
+
+      - name: Transfer Docker image to VM
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.AZURE_VM_IP }}
+          username: ${{ secrets.AZURE_VM_USERNAME }}
+          key: ${{ secrets.AZURE_VM_SSH_PRIVATE_KEY }}
+          source: "comp7940bot.tar"
+          target: "~/comp7940bot.tar"
+
+      - name: Deploy on Azure VM
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.AZURE_VM_IP }}
+          username: ${{ secrets.AZURE_VM_USERNAME }}
+          key: ${{ secrets.AZURE_VM_SSH_PRIVATE_KEY }}
+          script: |
+            docker load -i ~/comp7940bot.tar
+            
+            docker stop comp7940bot || true
+            docker rm comp7940bot || true
+            
+            docker run -d \
+              --name comp7940bot \
+              --restart unless-stopped \
+              comp7940bot:latest
+            
+            rm ~/comp7940bot.tar
