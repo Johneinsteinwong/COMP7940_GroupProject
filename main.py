@@ -229,6 +229,7 @@ def find_faq_answer(question: str) -> str:
         """, (f"%{normed_question}%",))
         # return similarity > threshold, otherwise None
         if result: 
+            logging.info("Found FAQ answer: " + str(result))
             return result[0]['answer']
         return None 
     except Exception as e:
@@ -239,9 +240,9 @@ def find_faq_answer(question: str) -> str:
 def equiped_chatgpt(update: Update, context: CallbackContext) -> None:
     global chatbot
     question = update.message.text
-    logging.info("Input text" + repr(update.message.text))
+    logging.info("Input text" + repr(question))
     logging.info("Update: " + str(update))
-    logging.info("Context: " + str(context))
+
     search_reply = find_faq_answer(question)
     if search_reply:
         logging.info("Found FAQ answer: " + search_reply)
@@ -334,7 +335,8 @@ def add_faq():
         faq = [
             'What is Abelian?',
             'What is the total supply of Abelian?',
-            'What is the Abelian token release schedule?'
+            'What is the Abelian token release schedule?',
+            'How do i set up an Abelian wallet?'
         ]
         cur.execute("""
             CREATE TABLE IF NOT EXISTS faq (
