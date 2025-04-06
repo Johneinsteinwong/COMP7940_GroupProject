@@ -36,10 +36,10 @@ class ChatBot:
     def __init__(self, embedding_model: str = "mxbai-embed-large"): #config: configparser.ConfigParser, 
         self.secret = load_secrets()
         self.model = HKBU_ChatGPT(
-            base_url=self.secret['CHATGPT_BASICURL'],#config['CHATGPT']['BASICURL'],
-            model=self.secret['CHATGPT_MODELNAME'],#config['CHATGPT']['MODELNAME'], 
-            api_version=self.secret['CHATGPT_APIVERSION'],#config['CHATGPT']['APIVERSION'],
-            api_key=self.secret['CHATGPT_ACCESS_TOKEN'],#config['CHATGPT']['ACCESS_TOKEN'],
+            base_url=self.secret['CHATGPT-BASICURL'],#config['CHATGPT']['BASICURL'],
+            model=self.secret['CHATGPT-MODELNAME'],#config['CHATGPT']['MODELNAME'], 
+            api_version=self.secret['CHATGPT-APIVERSION'],#config['CHATGPT']['APIVERSION'],
+            api_key=self.secret['CHATGPT-ACCESS-TOKEN'],#config['CHATGPT']['ACCESS_TOKEN'],
         )
         #self.config = config
         self.embeddings = OllamaEmbeddings(model=embedding_model)
@@ -283,7 +283,7 @@ def check_tweet_exists(tweet_id):
 def insert_data() -> None:
     try:
         global secrets
-        BEARER_TOKEN = secrets['TWITTER_BEARER_TOKEN']
+        BEARER_TOKEN = secrets['TWITTER-BEARER-TOKEN']
         global postgreConn
         cur = postgreConn.cursor()
         # Get max timstamp
@@ -388,11 +388,11 @@ def main():
     secrets = load_secrets()
 
     #updater = Updater(token=os.environ['TELEGRAM_ACCESS_TOKEN'], use_context=True) #config['TELEGRAM']['ACCESS_TOKEN']
-    updater = Updater(token=secrets['TELEGRAM_ACCESS_TOKEN'], use_context=True)
+    updater = Updater(token=secrets['TELEGRAM-ACCESS-TOKEN'], use_context=True)
     dispatcher = updater.dispatcher
 
     global postgreConn 
-    postgreConn = psycopg2.connect(secrets['CONNECTION_STRING'])#config['PostgreSQL']['CONNECTION_STRING'])
+    postgreConn = psycopg2.connect(secrets['CONNECTION-STRING'])#config['PostgreSQL']['CONNECTION_STRING'])
 
     create_table()
     insert_data()#BEARER_TOKEN)
