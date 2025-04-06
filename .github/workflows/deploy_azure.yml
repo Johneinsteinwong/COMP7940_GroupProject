@@ -22,18 +22,7 @@ jobs:
       - name: Build and Run image on VM
         uses: appleboy/ssh-action@master
         env:
-          TELEGRAM_ACCESS_TOKEN: ${{ secrets.TELEGRAM_ACCESS_TOKEN }}
-          CONNECTION_STRING: ${{ secrets.CONNECTION_STRING }}
-          INDEX_NAME: ${{ secrets.INDEX_NAME }}
-          CHATGPT_BASICURL: ${{ secrets.CHATGPT_BASICURL }}
-          CHATGPT_MODELNAME: ${{ secrets.CHATGPT_MODELNAME }}
-          CHATGPT_APIVERSION: ${{ secrets.CHATGPT_APIVERSION }}
-          CHATGPT_ACCESS_TOKEN: ${{ secrets.CHATGPT_ACCESS_TOKEN }}
-          TWITTER_API_KEY: ${{ secrets.TWITTER_API_KEY }}
-          TWITTER_API_SECRET_KEY: ${{ secrets.TWITTER_API_SECRET_KEY }}
-          TWITTER_ACCESS_TOKEN: ${{ secrets.TWITTER_ACCESS_TOKEN }}
-          TWITTER_ACCESS_TOKEN_SECRET: ${{ secrets.TWITTER_ACCESS_TOKEN_SECRET }}
-          TWITTER_BEARER_TOKEN: ${{ secrets.TWITTER_BEARER_TOKEN }}
+          KEY_VAULT_URL: ${{ secrets.KEY_VAULT_URL }}
         with:
           host: ${{ secrets.AZURE_VM_IP }}
           username: ${{ secrets.AZURE_VM_USERNAME }}
@@ -50,11 +39,12 @@ jobs:
             docker run -d \
               --name comp7940bot \
               --restart unless-stopped \
-              -e KEY_VAULT_URL="$KEY_VAULT_URL" \
+              -e KEY_VAULT_URL=$KEY_VAULT_URL \
               comp7940bot:latest
-              
+            
             docker exec comp7940bot python -c "
             import os;
             print('Key Vault URL:', os.getenv('KEY_VAULT_URL'))"
+
 
             
