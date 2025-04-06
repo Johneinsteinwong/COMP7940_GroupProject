@@ -1,3 +1,5 @@
 FROM ollama/ollama
 
-RUN ollama serve && ollama pull mxbai-embed-large
+COPY start-ollama.sh /start-ollama.sh
+RUN chmod +x /start-ollama.sh
+CMD ["/start-ollama.sh"]
