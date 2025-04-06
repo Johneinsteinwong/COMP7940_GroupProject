@@ -15,4 +15,4 @@ done
 
 echo "Ollama is running, starting the chatbot..."
 
-python app.py
+python bot/app.py
