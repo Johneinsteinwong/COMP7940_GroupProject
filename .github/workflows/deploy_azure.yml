@@ -21,8 +21,6 @@ jobs:
 
       - name: Build and Run image on VM
         uses: appleboy/ssh-action@master
-        env:
-          KEY_VAULT_URL: ${{ secrets.KEY_VAULT_URL }}
         with:
           host: ${{ secrets.AZURE_VM_IP }}
           username: ${{ secrets.AZURE_VM_USERNAME }}
@@ -39,12 +37,5 @@ jobs:
             docker run -d \
               --name comp7940bot \
               --restart unless-stopped \
-              -e KEY_VAULT_URL=$KEY_VAULT_URL \
               comp7940bot:latest
-            
-            docker exec comp7940bot python -c "
-            import os;
-            print('Key Vault URL:', os.getenv('KEY_VAULT_URL'))"
-
-
             

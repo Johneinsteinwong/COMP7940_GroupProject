@@ -28,6 +28,6 @@ COPY --chown=user:user . .
 
 RUN chmod +x start.sh
 
-
+ENV KEY_VAULT_URL=https://comp7940keyvault.vault.azure.net/
 CMD ["./start.sh"]
 
