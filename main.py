@@ -137,9 +137,9 @@ class ChatBot:
 
 def summarize(update: Update, context: CallbackContext) -> None:
         #global redis1
-    global postgreConn
-    cur = postgreConn.cursor()
     try:
+        global postgreConn
+        cur = postgreConn.cursor()
         start, end = context.args#[0]
         logging.info(context)
 
@@ -213,14 +213,14 @@ def normalize_question(question: str) -> str:
     return question
 
 def find_faq_answer(question: str) -> str:
-    global postgreConn
-    cur = postgreConn.cursor()
 
     #question = unicodedata.normalize('NFKC', question)
     
     normed_question = normalize_question(question)#re.sub(r'[^\w\s]', '', question.lower().strip())
     logging.info("Searching for normalized question: " + normed_question)
     try:
+        global postgreConn
+        cur = postgreConn.cursor()
         result = cur.execute("""
             SELECT answer, question
             FROM faq
@@ -244,7 +244,7 @@ def equiped_chatgpt(update: Update, context: CallbackContext) -> None:
     logging.info("Update: " + str(update))
 
     search_reply = find_faq_answer(question)
-    if search_reply:
+    if search_reply is not None:
         logging.info("Found FAQ answer: " + search_reply)
         context.bot.send_message(chat_id=update.effective_chat.id, text=search_reply)
         return
@@ -267,12 +267,16 @@ def create_table() -> None:
 
 
 def check_tweet_exists(tweet_id):
-    global postgreConn
-    cur = postgreConn.cursor()
-    cur.execute("""
-        SELECT 1 FROM tweets WHERE id = %s LIMIT 1
-    """, (tweet_id,))
-    return cur.fetchone() is not None
+    try:
+        global postgreConn
+        cur = postgreConn.cursor()
+        cur.execute("""
+            SELECT 1 FROM tweets WHERE id = %s LIMIT 1
+        """, (tweet_id,))
+        return cur.fetchone() is not None
+    except Exception as e:
+        logging.error("Error checking tweet existence: " + str(e))
+        return None
 
 def insert_data() -> None:
     try:
@@ -318,12 +322,16 @@ def insert_data() -> None:
 
 
 def check_faq_exists(question):
-    global postgreConn
-    cur = postgreConn.cursor()
-    cur.execute("""
-        SELECT 1 FROM faq WHERE question = %s LIMIT 1
-    """, (question,))
-    return cur.fetchone() is not None
+    try:
+        global postgreConn
+        cur = postgreConn.cursor()
+        cur.execute("""
+            SELECT 1 FROM faq WHERE question = %s LIMIT 1
+        """, (question,))
+        return cur.fetchone() is not None
+    except Exception as e:
+        logging.error("Error checking FAQ existence: " + str(e))
+        return None
 
 def add_faq():
     logging.info("Adding FAQ to the database.")
@@ -336,7 +344,8 @@ def add_faq():
             'What is Abelian?',
             'What is the total supply of Abelian?',
             'What is the Abelian token release schedule?',
-            'How do i set up an Abelian wallet?'
+            'How do i set up an Abelian wallet?',
+            'How do i set up an Abelian miner?',
         ]
         cur.execute("""
             CREATE TABLE IF NOT EXISTS faq (
