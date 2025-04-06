@@ -20,6 +20,7 @@ RUN useradd -m -u 1000 user && \
 
 COPY --chown=user:user . .
 
+RUN chmod +x /home/user/app/bot/start.sh
 
 # Switch to the "user" user
 USER user
