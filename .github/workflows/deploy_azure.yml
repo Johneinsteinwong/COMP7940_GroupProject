@@ -21,6 +21,19 @@ jobs:
 
       - name: Build and Run image on VM
         uses: appleboy/ssh-action@master
+        env:
+          TELEGRAM_ACCESS_TOKEN: ${{ secrets.TELEGRAM_ACCESS_TOKEN }}
+          CONNECTION_STRING: ${{ secrets.CONNECTION_STRING }}
+          INDEX_NAME: ${{ secrets.INDEX_NAME }}
+          CHATGPT_BASICURL: ${{ secrets.CHATGPT_BASICURL }}
+          CHATGPT_MODELNAME: ${{ secrets.CHATGPT_MODELNAME }}
+          CHATGPT_APIVERSION: ${{ secrets.CHATGPT_APIVERSION }}
+          CHATGPT_ACCESS_TOKEN: ${{ secrets.CHATGPT_ACCESS_TOKEN }}
+          TWITTER_API_KEY: ${{ secrets.TWITTER_API_KEY }}
+          TWITTER_API_SECRET_KEY: ${{ secrets.TWITTER_API_SECRET_KEY }}
+          TWITTER_ACCESS_TOKEN: ${{ secrets.TWITTER_ACCESS_TOKEN }}
+          TWITTER_ACCESS_TOKEN_SECRET: ${{ secrets.TWITTER_ACCESS_TOKEN_SECRET }}
+          TWITTER_BEARER_TOKEN: ${{ secrets.TWITTER_BEARER_TOKEN }}
         with:
           host: ${{ secrets.AZURE_VM_IP }}
           username: ${{ secrets.AZURE_VM_USERNAME }}
@@ -37,17 +50,17 @@ jobs:
             docker run -d \
               --name comp7940bot \
               --restart unless-stopped \
-              -e TELEGRAM_ACCESS_TOKEN=$TELEGRAM_ACCESS_TOKEN \
-              -e CONNECTION_STRING=$CONNECTION_STRING \
-              -e INDEX_NAME=$INDEX_NAME \
-              -e CHATGPT_BASICURL=$CHATGPT_BASICURL \
-              -e CHATGPT_MODELNAME=$CHATGPT_MODELNAME \
-              -e CHATGPT_APIVERSION=$CHATGPT_APIVERSION \
-              -e CHATGPT_ACCESS_TOKEN=$CHATGPT_ACCESS_TOKEN \
-              -e TWITTER_API_KEY=$TWITTER_API_KEY \
-              -e TWITTER_API_SECRET_KEY=$TWITTER_API_SECRET_KEY \
-              -e TWITTER_ACCESS_TOKEN=$TWITTER_ACCESS_TOKEN \
-              -e TWITTER_ACCESS_TOKEN_SECRET=$TWITTER_ACCESS_TOKEN_SECRET \
-              -e TWITTER_BEARER_TOKEN=$TWITTER_BEARER_TOKEN \
+              -e TELEGRAM_ACCESS_TOKEN="$TELEGRAM_ACCESS_TOKEN" \
+              -e CONNECTION_STRING="$CONNECTION_STRING" \
+              -e INDEX_NAME="$INDEX_NAME" \
+              -e CHATGPT_BASICURL="$CHATGPT_BASICURL" \
+              -e CHATGPT_MODELNAME="$CHATGPT_MODELNAME" \
+              -e CHATGPT_APIVERSION="$CHATGPT_APIVERSION" \
+              -e CHATGPT_ACCESS_TOKEN="$CHATGPT_ACCESS_TOKEN" \
+              -e TWITTER_API_KEY="$TWITTER_API_KEY" \
+              -e TWITTER_API_SECRET_KEY="$TWITTER_API_SECRET_KEY" \
+              -e TWITTER_ACCESS_TOKEN="$TWITTER_ACCESS_TOKEN" \
+              -e TWITTER_ACCESS_TOKEN_SECRET="$TWITTER_ACCESS_TOKEN_SECRET" \
+              -e TWITTER_BEARER_TOKEN="$TWITTER_BEARER_TOKEN" \
               comp7940bot:latest
             
