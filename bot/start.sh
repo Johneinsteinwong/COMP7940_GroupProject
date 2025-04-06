@@ -2,7 +2,7 @@
 
 echo "Waiting for ollama service..."
 
-timeout=60
+timeout=600
 while ! curl -s "$OLLAMA_HOST" >/dev/null; do
     sleep 1
     ((timeout--))
