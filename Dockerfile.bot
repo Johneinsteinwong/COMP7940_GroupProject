@@ -25,8 +25,7 @@ WORKDIR /home/user/app
 
 COPY --chown=user:user . .
 
-
-RUN chmod +x ./bot/start.sh
+RUN chmod +x bot/start.sh
 
 CMD ["./bot/start.sh"]
 
