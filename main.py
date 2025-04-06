@@ -205,7 +205,8 @@ def find_faq_answer(question: str) -> str:
     global postgreConn
     cur = postgreConn.cursor()
 
-    normed_question = re.sub(r'[^\w\s]', '', question.lower())
+    normed_question = re.sub(r'[^\w\s]', '', question.lower().strip())
+    logging.info("Normalized question: " + normed_question)
     try:
         result = cur.execute("""
             SELECT answer, question
