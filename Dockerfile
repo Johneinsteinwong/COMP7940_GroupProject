@@ -20,7 +20,7 @@ RUN useradd -m -u 1000 user && \
 
 # Switch to the "user" user
 USER user
-WORKDIR $HOME/app
+WORKDIR /home/user/app 
 
 COPY --chown=user:user . .
 
