@@ -10,8 +10,7 @@ RUN curl -sL https://aka.ms/InstallAzureCLIDeb | bash
 
 COPY requirements.txt .
 
-RUN pip install --no-cache-dir --upgrade pip && \
-	pip install -r requirements.txt
+RUN pip install --no-cache-dir --upgrade pip && pip install -r requirements.txt
 
 
 # Set up a new user named "user" with user ID 1000
