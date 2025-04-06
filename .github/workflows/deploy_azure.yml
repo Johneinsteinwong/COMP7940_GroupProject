@@ -50,19 +50,11 @@ jobs:
             docker run -d \
               --name comp7940bot \
               --restart unless-stopped \
-              -e TELEGRAM_ACCESS_TOKEN="$TELEGRAM_ACCESS_TOKEN" \
-              -e CONNECTION_STRING="$CONNECTION_STRING" \
-              -e INDEX_NAME="$INDEX_NAME" \
-              -e CHATGPT_BASICURL="$CHATGPT_BASICURL" \
-              -e CHATGPT_MODELNAME="$CHATGPT_MODELNAME" \
-              -e CHATGPT_APIVERSION="$CHATGPT_APIVERSION"\
-              -e CHATGPT_ACCESS_TOKEN="$CHATGPT_ACCESS_TOKEN" \
-              -e TWITTER_API_KEY="$TWITTER_API_KEY" \
-              -e TWITTER_API_SECRET_KEY="$TWITTER_API_SECRET_KEY" \
-              -e TWITTER_ACCESS_TOKEN="$TWITTER_ACCESS_TOKEN" \
-              -e TWITTER_ACCESS_TOKEN_SECRET="$TWITTER_ACCESS_TOKEN_SECRET" \
-              -e TWITTER_BEARER_TOKEN="$TWITTER_BEARER_TOKEN" \
+              -e KEY_VAULT_URL="$KEY_VAULT_URL" \
               comp7940bot:latest
+              
+            docker exec comp7940bot python -c "
+            import os;
+            print('Key Vault URL:', os.getenv('KEY_VAULT_URL'))"
 
-              docker exec comp7940bot sh -c 'echo "Token: $TELEGRAM_ACCESS_TOKEN"'
             

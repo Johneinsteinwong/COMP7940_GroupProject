@@ -23,6 +23,7 @@ import unicodedata
 import psycopg2
 from datetime import datetime, timezone, timedelta
 from ChatGPT_HKBU import HKBU_ChatGPT
+from azure_secret_loader import load_secrets
 
 
 set_debug(True)
@@ -33,11 +34,12 @@ logger = logging.getLogger(__name__)
 
 class ChatBot:
     def __init__(self, embedding_model: str = "mxbai-embed-large"): #config: configparser.ConfigParser, 
+        self.secret = load_secrets()
         self.model = HKBU_ChatGPT(
-            base_url=os.environ['CHATGPT_BASICURL'],#config['CHATGPT']['BASICURL'],
-            model=os.environ['CHATGPT_MODELNAME'],#config['CHATGPT']['MODELNAME'], 
-            api_version=os.environ['CHATGPT_APIVERSION'],#config['CHATGPT']['APIVERSION'],
-            api_key=os.environ['CHATGPT_ACCESS_TOKEN'],#config['CHATGPT']['ACCESS_TOKEN'],
+            base_url=self.secret['CHATGPT_BASICURL'],#config['CHATGPT']['BASICURL'],
+            model=self.secret['CHATGPT_MODELNAME'],#config['CHATGPT']['MODELNAME'], 
+            api_version=self.secret['CHATGPT_APIVERSION'],#config['CHATGPT']['APIVERSION'],
+            api_key=self.secret['CHATGPT_ACCESS_TOKEN'],#config['CHATGPT']['ACCESS_TOKEN'],
         )
         #self.config = config
         self.embeddings = OllamaEmbeddings(model=embedding_model)
@@ -58,8 +60,8 @@ class ChatBot:
         )
         self.vector_store = PGVector.from_existing_index(
             embedding=self.embeddings,
-            connection=os.environ['CONNECTION_STRING'],#self.config['PostgreSQL']['CONNECTION_STRING'],
-            collection_name=os.environ['INDEX_NAME'],#self.config['PostgreSQL']['INDEX_NAME'],
+            connection=self.secret['CONNECTION_STRING'],#self.config['PostgreSQL']['CONNECTION_STRING'],
+            collection_name=self.secret['INDEX_NAME'],#self.config['PostgreSQL']['INDEX_NAME'],
         )
         #self.vector_store = Redis(
         #    embedding=self.embeddings,
@@ -280,7 +282,8 @@ def check_tweet_exists(tweet_id):
 
 def insert_data() -> None:
     try:
-        BEARER_TOKEN = os.environ['TWITTER_BEARER_TOKEN']
+        global secrets
+        BEARER_TOKEN = secrets['TWITTER_BEARER_TOKEN']
         global postgreConn
         cur = postgreConn.cursor()
         # Get max timstamp
@@ -381,12 +384,15 @@ def main():
     #config.read('config.ini')
     #os.environ['OPENAI_API_KEY'] = config['CHATGPT']['ACCESS_TOKEN']
     #BEARER_TOKEN = os.environ['TWITTER_BEARER_TOKEN']#config['TWITTER']['BEARER_TOKEN'] 
-    logging.info(os.environ['TELEGRAM_ACCESS_TOKEN'])
-    updater = Updater(token=os.environ['TELEGRAM_ACCESS_TOKEN'], use_context=True) #config['TELEGRAM']['ACCESS_TOKEN']
+    global secrets
+    secrets = load_secrets()
+
+    #updater = Updater(token=os.environ['TELEGRAM_ACCESS_TOKEN'], use_context=True) #config['TELEGRAM']['ACCESS_TOKEN']
+    updater = Updater(token=secrets['TELEGRAM_ACCESS_TOKEN'], use_context=True)
     dispatcher = updater.dispatcher
 
     global postgreConn 
-    postgreConn = psycopg2.connect(os.environ['CONNECTION_STRING'])#config['PostgreSQL']['CONNECTION_STRING'])
+    postgreConn = psycopg2.connect(secrets['CONNECTION_STRING'])#config['PostgreSQL']['CONNECTION_STRING'])
 
     create_table()
     insert_data()#BEARER_TOKEN)
