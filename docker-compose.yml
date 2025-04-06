@@ -23,5 +23,5 @@ services:
       - .:/home/user/app
     restart: always
 volumes:
-  ollama-data
+  ollama-data {}
  
