@@ -200,13 +200,25 @@ def summarize(update: Update, context: CallbackContext) -> None:
         logging.error("Error in summarize: " + str(e))
         update.message.reply_text('Usage: /summarize <start date>(YYYY-MM-DD) <end date>(YYYY-MM-DD)')
 
+def normalize_question(question: str) -> str:
+
+    question = unicodedata.normalize('NFKC', question)
+    
+    question = re.sub(r'[^\w\s]|_', '', question)  
+    
+    question = question.lower().strip()
+    
+    question = re.sub(r'\s+', ' ', question)
+    
+    return question
 
 def find_faq_answer(question: str) -> str:
     global postgreConn
     cur = postgreConn.cursor()
 
-    question = unicodedata.normalize('NFKC', question)
-    normed_question = re.sub(r'[^\w\s]', '', question.lower().strip())
+    #question = unicodedata.normalize('NFKC', question)
+    
+    normed_question = normalize_question(question)#re.sub(r'[^\w\s]', '', question.lower().strip())
     logging.info("Searching for normalized question: " + normed_question)
     try:
         result = cur.execute("""
@@ -332,8 +344,8 @@ def add_faq():
             )
         """)
         for question in faq:
-            question = unicodedata.normalize('NFKC', question)
-            normed_question = re.sub(r'[^\w\s]', '', question.lower().strip())
+            #question = unicodedata.normalize('NFKC', question)
+            normed_question = normed_question = normalize_question(question) #re.sub(r'[^\w\s]', '', question.lower().strip())
             if check_faq_exists(normed_question):
                 logging.info("FAQ already exists: " + normed_question)
                 continue
