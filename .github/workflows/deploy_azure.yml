@@ -32,7 +32,7 @@ jobs:
             docker stop comp7940bot || true
             docker rm comp7940bot || true
             
-            docker build . --platform linux/amd64 -t comp7940bot
+            docker build . --no-cache --platform linux/amd64 -t comp7940bot
             
             docker run -d \
               --name comp7940bot \
