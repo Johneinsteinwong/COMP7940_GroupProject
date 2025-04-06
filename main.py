@@ -60,8 +60,8 @@ class ChatBot:
         )
         self.vector_store = PGVector.from_existing_index(
             embedding=self.embeddings,
-            connection=self.secret['CONNECTION_STRING'],#self.config['PostgreSQL']['CONNECTION_STRING'],
-            collection_name=self.secret['INDEX_NAME'],#self.config['PostgreSQL']['INDEX_NAME'],
+            connection=self.secret['CONNECTION-STRING'],#self.config['PostgreSQL']['CONNECTION_STRING'],
+            collection_name=self.secret['INDEX-NAME'],#self.config['PostgreSQL']['INDEX_NAME'],
         )
         #self.vector_store = Redis(
         #    embedding=self.embeddings,
