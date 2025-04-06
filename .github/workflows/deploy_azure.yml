@@ -8,10 +8,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Build Docker image
-        run: |
-          docker build . --platform linux/amd64 -t comp7940bot
-          docker save -o comp7940bot.tar comp7940bot:latest
 
       - name: Transfer code to VM
         uses: appleboy/scp-action@master
