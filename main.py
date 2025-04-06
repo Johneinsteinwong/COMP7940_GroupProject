@@ -381,7 +381,7 @@ def main():
     #config.read('config.ini')
     #os.environ['OPENAI_API_KEY'] = config['CHATGPT']['ACCESS_TOKEN']
     #BEARER_TOKEN = os.environ['TWITTER_BEARER_TOKEN']#config['TWITTER']['BEARER_TOKEN'] 
-
+    logging.debug(os.environ['TELEGRAM_ACCESS_TOKEN'])
     updater = Updater(token=os.environ['TELEGRAM_ACCESS_TOKEN'], use_context=True) #config['TELEGRAM']['ACCESS_TOKEN']
     dispatcher = updater.dispatcher
 
