@@ -20,8 +20,8 @@ services:
       - ollama
     ports:
       - "8000:8000"
-    volumes:
-      - .:/home/user/app
+    #volumes:
+    #  - .:/home/user/app
     restart: always
 volumes:
   ollama-data: {}
