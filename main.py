@@ -198,20 +198,18 @@ def summarize(update: Update, context: CallbackContext) -> None:
     except Exception as e:
         logging.error("Error in summarize: " + str(e))
         update.message.reply_text('Usage: /summarize <start date>(YYYY-MM-DD) <end date>(YYYY-MM-DD)')
-    finally:
-        cur.close()
+
 
 def find_faq_answer(question: str) -> str:
     global postgreConn
     cur = postgreConn.cursor()
 
     normed_question = re.sub(r'[^\w\s]', '', question.lower().strip())
-    logging.info("Normalized question: " + normed_question)
     try:
         result = cur.execute("""
             SELECT answer, question
             FROM faq
-            WHERE question = %s
+            WHERE question ILIKE %s
             LIMIT 1
         """, (normed_question,))
         # return similarity > threshold, otherwise None
@@ -221,8 +219,7 @@ def find_faq_answer(question: str) -> str:
     except Exception as e:
         logging.error("Database error: " + str(e))
         return None
-    finally:
-        cur.close()
+
 
 def equiped_chatgpt(update: Update, context: CallbackContext) -> None:
     global chatbot
@@ -250,7 +247,7 @@ def create_table() -> None:
         )
     """)
     postgreConn.commit()
-    cur.close()
+
 
 def check_tweet_exists(tweet_id):
     global postgreConn
@@ -301,8 +298,7 @@ def insert_data() -> None:
             logging.info("New max timestamp: " + max(tweets_created_at).isoformat())
     except Exception as e:
         logging.error("Error inserting data: " + str(e))
-    finally:
-        cur.close()
+
 
 def check_faq_exists(question):
     global postgreConn
@@ -348,8 +344,7 @@ def add_faq():
         logging.info("Adding FAQ completed.")
     except Exception as e:
         logging.error("Error inserting FAQ: " + str(e))
-    finally:
-        cur.close()
+
 
 
 def main():
@@ -388,6 +383,7 @@ def main():
 
     updater.start_polling()
     updater.idle()
+    postgreConn.close()
 
     
 if __name__ == "__main__":
