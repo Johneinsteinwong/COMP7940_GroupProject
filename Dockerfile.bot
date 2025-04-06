@@ -17,15 +17,18 @@ RUN useradd -m -u 1000 user && \
     mkdir -p /home/user/app && \
     chown -R user:user /home/user
 
-# Switch to the "user" user
-USER user
-WORKDIR /home/user/app 
 
 COPY --chown=user:user . .
 
 
+# Switch to the "user" user
+USER user
+WORKDIR /home/user/app 
+
+
+
+
 RUN chmod +x ./bot/start.sh
 
-ENV KEY_VAULT_URL=https://comp7940keyvault.vault.azure.net/
 CMD ["./bot/start.sh"]
 

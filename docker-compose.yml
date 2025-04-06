@@ -15,6 +15,7 @@ services:
       dockerfile: Dockerfile.bot
     environment:
       - OLLAMA_HOST=http://ollama:11434
+      - KEY_VAULT_URL=https://comp7940keyvault.vault.azure.net/
     depends_on:
       - ollama
     ports:
