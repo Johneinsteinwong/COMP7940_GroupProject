@@ -1,5 +1,6 @@
 FROM ollama/ollama
 
-COPY start-ollama.sh /start-ollama.sh
+
+COPY start-ollama.sh .
 RUN chmod +x /start-ollama.sh
-CMD ["/start-ollama.sh"]
+CMD ["./start-ollama.sh"]
