@@ -191,9 +191,9 @@ def normalize_question(question: str) -> str:
     
     question = re.sub(r'[^\w\s]|_', '', question)  
     
-    question = question.lower().strip()
+    question = question.lower()#.strip()
     
-    question = re.sub(r'\s+', ' ', question)
+    question = re.sub(r'\s+', '', question)
     
     return question
 
