@@ -6,7 +6,7 @@ timeout=600
 while ! curl -s "$OLLAMA_HOST" >/dev/null; do
     sleep 1
     timeout=$((timeout - 1))
-    if [[ $timeout -le 0 ]]; then
+    if [ $timeout -le 0 ]; then
         echo "Error: Ollama server did not start in time!"
         exit 1
     fi
