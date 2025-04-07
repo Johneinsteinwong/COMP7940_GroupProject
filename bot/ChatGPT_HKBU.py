@@ -29,20 +29,14 @@ class HKBU_ChatGPT(BaseChatModel):
         super().__init__(base_url=base_url, model=model, api_version=api_version, api_key=api_key, **kwargs)
 
     def _generate(self, message, stop=None, **kwargs) -> ChatResult:
-        #conversation = [{"role": "user", "content": message}]
+
         conversation = [message_to_dict(msg) for msg in message]
         print(type(message),message)
-        #url = self.config['CHATGPT']['BASICURL'] + \
-        #"/deployments/" + self.config['CHATGPT']['MODELNAME'] + \
-        #"/chat/completions/?api-version=" + self.config['CHATGPT']['APIVERSION']
+
         url = self.base_url + \
         "/deployments/" + self.model + \
         "/chat/completions/?api-version=" + self.api_version
 
-        #header = {
-        #    'Content-Type' : 'application/json',
-        #    'api-key' : self.config['CHATGPT']['ACCESS_TOKEN']
-        #}
         header = {
             'Content-Type' : 'application/json',
             'api-key' : self.api_key

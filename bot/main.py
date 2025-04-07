@@ -24,6 +24,8 @@ import psycopg2
 from datetime import datetime, timezone, timedelta
 from ChatGPT_HKBU import HKBU_ChatGPT
 from azure_secret_loader import load_secrets
+import threading
+import time
 
 
 set_debug(True)
@@ -152,7 +154,6 @@ def summarize(update: Update, context: CallbackContext) -> None:
         if not (0 <= num_days <= 14):
             update.message.reply_text('Please enter a date range within 14 days.')
         else:
-            #update.message.reply_text('Searching for the number of cases between ' + str(start.timestamp()) + ' and ' + str(end.timestamp()))
 #
             start_timestamp = start#int(start.timestamp())
             end_timestamp = end + timedelta(days=1, seconds=-1) #int(end.timestamp()) + 86399 
@@ -166,12 +167,6 @@ def summarize(update: Update, context: CallbackContext) -> None:
             tweets = cur.fetchall()
             tweet_ids = [tweet[0] for tweet in tweets]
 
-            # tweet_ids = redis1.zrangebyscore(
-            #     "tweets:by_time",
-            #     start_timestamp,
-            #     end_timestamp,
-            #     withscores=False  # Return only IDs (omit timestamps)
-            # )
             logging.info(tweet_ids)
             #tweets_collected = []
             tweets_str = '='*50 + '\n'
@@ -181,23 +176,11 @@ def summarize(update: Update, context: CallbackContext) -> None:
                     tweets_str += text + '\n'
                     tweets_str += '='*50 + '\n'
 
-                # for tweet_id in tweet_ids:
-
-                #     tweet = redis1.hgetall(tweet_id)
-                #     tweets_collected.append(tweet)
-                #     tweets_str += datetime.fromtimestamp(int(tweet['created_at'])).isoformat()
-                #     tweets_str += '\n'
-                #     tweets_str += tweet['text'] + '\n'
-                #     tweets_str += '='*50 + '\n'
-
-                #tweets_json_str = json.dumps(tweets_collected, indent=2) 
                 reply_message = chatbot.summarize_tweets(tweets_str)
                 update.message.reply_text(reply_message)
             else:
                 update.message.reply_text('No tweets found between ' + str(start) + ' and ' + str(end))
 
-       # update.message.reply_text('You have said ' + msg + ' for ' + 
-       #                         redis1.get(msg) + ' times.')
     except Exception as e:
         logging.error("Error in summarize: " + str(e))
         update.message.reply_text('Usage: /summarize <start date>(YYYY-MM-DD) <end date>(YYYY-MM-DD)')
@@ -376,14 +359,16 @@ def add_faq():
     except Exception as e:
         logging.error("Error inserting FAQ: " + str(e))
 
-
+def daily_update():
+    while True:
+        try:
+            insert_data()
+        except Exception as e:
+            print(f"Error inserting data: {e}")
+        time.sleep(86400) # check for update once per day
 
 def main():
     
-    #config = configparser.ConfigParser()
-    #config.read('config.ini')
-    #os.environ['OPENAI_API_KEY'] = config['CHATGPT']['ACCESS_TOKEN']
-    #BEARER_TOKEN = os.environ['TWITTER_BEARER_TOKEN']#config['TWITTER']['BEARER_TOKEN'] 
     global secrets
     secrets = load_secrets()
 
@@ -395,19 +380,14 @@ def main():
     postgreConn = psycopg2.connect(secrets['CONNECTION-STRING'])#config['PostgreSQL']['CONNECTION_STRING'])
 
     create_table()
-    insert_data()#BEARER_TOKEN)
     
-    
-    # global redis1
-    # redis1 = redis.Redis(
-    #     host=config['REDIS']['HOST_RAW'],
-    #     password=config['REDIS']['PASSWORD'],
-    #     port=config['REDIS']['REDISPORT'],
-    #     decode_responses=config['REDIS']['DECODE_RESPONSE'],
-    #     username=config['REDIS']['USER_NAME']
-    # )
+    #insert_data()
+    # background thread for daily update
+    thread = threading.Thread(target=daily_update, daemon=True)
+    thread.start()
+
     global chatbot
-    chatbot = ChatBot()#config)
+    chatbot = ChatBot()
     add_faq()
 
     chatgpt_handler = MessageHandler(Filters.text & (~Filters.command), equiped_chatgpt)
