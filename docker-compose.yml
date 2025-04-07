@@ -2,6 +2,7 @@ version: '3.8'
 
 services:
   ollama:
+    entrypoint: /start_ollama.sh
     build:
       context: .
       dockerfile: Dockerfile.ollama

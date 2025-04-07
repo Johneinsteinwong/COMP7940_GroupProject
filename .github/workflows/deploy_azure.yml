@@ -38,7 +38,7 @@ jobs:
             #  comp7940bot:latest
 
             # Using docker compose
-            docker-compose down || true
+            docker compose down || true
             # clean old images
             docker system prune -f
             # build and start the services
