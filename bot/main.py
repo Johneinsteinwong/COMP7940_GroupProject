@@ -143,6 +143,9 @@ def summarize(update: Update, context: CallbackContext) -> None:
         #global redis1
     try:
         global postgreConn
+        if postgreConn is None or postgreConn.closed != 0:
+            postgreConn = psycopg2.connect(secrets['CONNECTION-STRING'])
+
         cur = postgreConn.cursor()
         start, end = context.args#[0]
         logging.info(context)
@@ -205,6 +208,9 @@ def find_faq_answer(question: str) -> str:
     logging.info("Searching for normalized question: " + normed_question)
     try:
         global postgreConn
+        if postgreConn is None or postgreConn.closed != 0:
+            postgreConn = psycopg2.connect(secrets['CONNECTION-STRING'])
+
         cur = postgreConn.cursor()
         result = cur.execute("""
             SELECT answer, question
@@ -239,6 +245,9 @@ def equiped_chatgpt(update: Update, context: CallbackContext) -> None:
 
 def create_table() -> None:
     global postgreConn
+    if postgreConn is None or postgreConn.closed != 0:
+        postgreConn = psycopg2.connect(secrets['CONNECTION-STRING'])
+
     cur = postgreConn.cursor()
     #cur.execute(""" DROP TABLE IF EXISTS tweets """)
     cur.execute("""
@@ -254,6 +263,9 @@ def create_table() -> None:
 def check_tweet_exists(tweet_id):
     try:
         global postgreConn
+        if postgreConn is None or postgreConn.closed != 0:
+            postgreConn = psycopg2.connect(secrets['CONNECTION-STRING'])
+
         cur = postgreConn.cursor()
         cur.execute("""
             SELECT 1 FROM tweets WHERE id = %s LIMIT 1
@@ -268,6 +280,9 @@ def insert_data() -> None:
         global secrets
         BEARER_TOKEN = secrets['TWITTER-BEARER-TOKEN']
         global postgreConn
+        if postgreConn is None or postgreConn.closed != 0:
+            postgreConn = psycopg2.connect(secrets['CONNECTION-STRING'])
+
         cur = postgreConn.cursor()
         # Get max timstamp
         cur.execute("""
@@ -310,6 +325,9 @@ def insert_data() -> None:
 def check_faq_exists(question):
     try:
         global postgreConn
+        if postgreConn is None or postgreConn.closed != 0:
+            postgreConn = psycopg2.connect(secrets['CONNECTION-STRING'])
+
         cur = postgreConn.cursor()
         cur.execute("""
             SELECT 1 FROM faq WHERE question = %s LIMIT 1
@@ -323,6 +341,9 @@ def add_faq():
     logging.info("Adding FAQ to the database.")
     try:
         global postgreConn
+        if postgreConn is None or postgreConn.closed != 0:
+            postgreConn = psycopg2.connect(secrets['CONNECTION-STRING'])
+            
         global chatbot
         cur = postgreConn.cursor()
 
