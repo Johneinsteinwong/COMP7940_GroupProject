@@ -144,6 +144,7 @@ def summarize(update: Update, context: CallbackContext) -> None:
     try:
         global postgreConn
         if postgreConn is None or postgreConn.closed != 0:
+            postgreConn.close()
             postgreConn = psycopg2.connect(secrets['CONNECTION-STRING'])
 
         cur = postgreConn.cursor()
@@ -209,6 +210,7 @@ def find_faq_answer(question: str) -> str:
     try:
         global postgreConn
         if postgreConn is None or postgreConn.closed != 0:
+            postgreConn.close()
             postgreConn = psycopg2.connect(secrets['CONNECTION-STRING'])
 
         cur = postgreConn.cursor()
@@ -246,6 +248,7 @@ def equiped_chatgpt(update: Update, context: CallbackContext) -> None:
 def create_table() -> None:
     global postgreConn
     if postgreConn is None or postgreConn.closed != 0:
+        postgreConn.close()
         postgreConn = psycopg2.connect(secrets['CONNECTION-STRING'])
 
     cur = postgreConn.cursor()
@@ -264,6 +267,7 @@ def check_tweet_exists(tweet_id):
     try:
         global postgreConn
         if postgreConn is None or postgreConn.closed != 0:
+            postgreConn.close()
             postgreConn = psycopg2.connect(secrets['CONNECTION-STRING'])
 
         cur = postgreConn.cursor()
@@ -281,6 +285,7 @@ def insert_data() -> None:
         BEARER_TOKEN = secrets['TWITTER-BEARER-TOKEN']
         global postgreConn
         if postgreConn is None or postgreConn.closed != 0:
+            postgreConn.close()
             postgreConn = psycopg2.connect(secrets['CONNECTION-STRING'])
 
         cur = postgreConn.cursor()
@@ -326,6 +331,7 @@ def check_faq_exists(question):
     try:
         global postgreConn
         if postgreConn is None or postgreConn.closed != 0:
+            postgreConn.close()
             postgreConn = psycopg2.connect(secrets['CONNECTION-STRING'])
 
         cur = postgreConn.cursor()
@@ -342,8 +348,9 @@ def add_faq():
     try:
         global postgreConn
         if postgreConn is None or postgreConn.closed != 0:
+            postgreConn.close()
             postgreConn = psycopg2.connect(secrets['CONNECTION-STRING'])
-            
+
         global chatbot
         cur = postgreConn.cursor()
 
