@@ -21,6 +21,8 @@ import re, os, json, tweepy
 import unicodedata
 #import redis
 import psycopg2
+from psycopg2 import InterfaceError, OperationalError
+
 from datetime import datetime, timezone, timedelta
 from ChatGPT_HKBU import HKBU_ChatGPT
 from azure_secret_loader import load_secrets
@@ -184,7 +186,10 @@ def summarize(update: Update, context: CallbackContext) -> None:
                 update.message.reply_text(reply_message)
             else:
                 update.message.reply_text('No tweets found between ' + str(start) + ' and ' + str(end))
-
+    except (InterfaceError, OperationalError) as db_err:
+        logging.error("Database connection error in summarize: " + str(db_err))
+        update.message.reply_text('Database connection timeout. I am using free tier.')
+        postgreConn = psycopg2.connect(secrets['CONNECTION-STRING'])
     except Exception as e:
         logging.error("Error in summarize: " + str(e))
         update.message.reply_text('Usage: /summarize <start date>(YYYY-MM-DD) <end date>(YYYY-MM-DD)')
@@ -219,7 +224,7 @@ def find_faq_answer(question: str) -> str:
             FROM faq
             WHERE question ILIKE %s
             LIMIT 1
-        """, (f"%{normed_question}%",))
+        """, (f'%{normed_question}%',))
         # return similarity > threshold, otherwise None
         if result: 
             logging.info("Found FAQ answer: " + str(result))
