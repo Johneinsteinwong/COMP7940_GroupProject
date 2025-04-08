@@ -10,6 +10,11 @@ services:
       - "11434:11434"
     volumes:
       - ollama-data:/root/.ollama
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
   chatbot:
     build:
       context: .
@@ -24,6 +29,12 @@ services:
     #volumes:
     #  - .:/home/user/app
     restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 7G
+
 volumes:
   ollama-data: {}
 
